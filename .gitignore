@@ -1,0 +1,3 @@
+# Keep Jenkins runtime state, local Compose overrides, and generated secrets out of Git.
+/jenkins_home/
+/.env

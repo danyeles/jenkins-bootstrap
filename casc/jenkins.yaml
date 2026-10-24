@@ -1,0 +1,9 @@
+# Core controller settings and the JCasC Job DSL hook that creates ArrSeed on first boot.
+jenkins:
+  systemMessage: "Jenkins is configured from the jenkins-bootstrap repository.\n"
+  # This single-controller setup runs the home infrastructure pipelines on the built-in node.
+  numExecutors: 2
+
+# Job DSL's JCasC extension evaluates this local DSL file during Jenkins initialization.
+jobs:
+  - file: /var/jenkins_home/seed-jobs/seed-job.groovy

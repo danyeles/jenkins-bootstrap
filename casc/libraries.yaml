@@ -1,0 +1,25 @@
+# Register the public shared library globally; HTTPS access requires no credentials or SSH keys.
+unclassified:
+  globalLibraries:
+    libraries:
+      - name: jenkins-shared-lib
+        defaultVersion: main
+        implicit: true
+        allowVersionOverride: false
+        includeInChangesets: true
+        retriever:
+          modernSCM:
+            scm:
+              git:
+                remote: https://github.com/danyeles/jenkins-shared-lib.git
+      # Existing jenkins-infra/seed.groovy currently uses this older library identifier.
+      - name: my-shared-lib
+        defaultVersion: main
+        implicit: false
+        allowVersionOverride: false
+        includeInChangesets: true
+        retriever:
+          modernSCM:
+            scm:
+              git:
+                remote: https://github.com/danyeles/jenkins-shared-lib.git

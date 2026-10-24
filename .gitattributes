@@ -1,0 +1,2 @@
+# Preserve Unix line endings for the executable Linux bootstrap script on every checkout.
+bootstrap.sh text eol=lf

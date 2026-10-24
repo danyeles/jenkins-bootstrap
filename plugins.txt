@@ -1,0 +1,12 @@
+# Core plugins for declarative Jenkins configuration, source checkout, and Pipeline jobs.
+configuration-as-code
+job-dsl
+workflow-aggregator
+pipeline-utility-steps
+git
+github
+github-branch-source
+credentials
+credentials-binding
+pipeline-stage-view
+docker-workflow

@@ -1,0 +1,21 @@
+# Run one Jenkins controller; its home directory is the durable, host-side runtime state.
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jenkins
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    environment:
+      CASC_JENKINS_CONFIG: /var/jenkins_home/casc
+    group_add:
+      # bootstrap.sh supplies the Docker socket's host group ID for portable access.
+      - "${DOCKER_GID:-999}"
+    volumes:
+      - ./jenkins_home:/var/jenkins_home
+      - ./casc:/var/jenkins_home/casc:ro
+      - ./seed-jobs:/var/jenkins_home/seed-jobs:ro
+      - /var/run/docker.sock:/var/run/docker.sock
