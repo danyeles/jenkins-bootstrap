@@ -4,18 +4,20 @@ FROM jenkins/jenkins:lts
 # Provide the Docker client used by deployment pipelines; the daemon remains on the Ubuntu host.
 USER root
 
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
-       docker.io \
-       curl \
-       jq \
-       git \
-       wget \
-       util-linux \
-    && wget -qO /usr/local/bin/yq \
-       https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
-    && chmod +x /usr/local/bin/yq \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y \
+      git \
+      jq \
+      wget \
+      curl \
+      util-linux && \
+    mkdir -p /tmp/dockercli && \
+    curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz \
+      -o /tmp/dockercli/docker.tgz && \
+    tar -xzf /tmp/dockercli/docker.tgz -C /tmp/dockercli && \
+    cp /tmp/dockercli/docker/docker /usr/local/bin/docker && \
+    chmod +x /usr/local/bin/docker && \
+    rm -rf /tmp/dockercli
 
 USER jenkins
 
