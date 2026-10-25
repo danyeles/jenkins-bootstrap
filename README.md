@@ -26,7 +26,7 @@ Rebuild a single-node Jenkins controller for the home media infrastructure using
 ## What is managed here
 
 - `docker-compose.yml` runs Jenkins, publishes ports `8080` and `50000`, persists `./jenkins_home`, and mounts the Docker socket.
-- `Dockerfile` derives from `jenkins/jenkins:lts`, installs the Docker CLI used by deployment pipelines, and installs plugins with the official `jenkins-plugin-cli` during image build.
+- `Dockerfile` derives from `jenkins/jenkins:lts`, installs the Docker CLI and Mike Farah `yq` v4 used by pipelines, and installs plugins with the official `jenkins-plugin-cli` during image build.
 - `plugins.txt` declares the required Jenkins plugins, including Pipeline Utility Steps for `readYaml`; plugin dependencies are resolved by the plugin manager.
 - `casc/jenkins.yaml` sets the system message and controller executors, then loads the seed-job DSL file.
 - `casc/libraries.yaml` registers the public shared library using HTTPS and the `main` branch.
@@ -38,6 +38,10 @@ Rebuild a single-node Jenkins controller for the home media infrastructure using
 Jenkins deployment jobs use the host Docker daemon through `/var/run/docker.sock`. The socket is owned by a host group, and Jenkins must run with that group ID to access it. A fixed GID is not portable because Debian and Ubuntu hosts can assign different IDs to the Docker group.
 
 During bootstrap, `bootstrap.sh` verifies that `/var/run/docker.sock` exists, detects its group ID with `stat -c '%g' /var/run/docker.sock`, and writes the detected value as `DOCKER_GID=<gid>` to the repository's `.env` file. Docker Compose uses that value as Jenkins' supplementary group. Bootstrap prints the detected GID before starting the service. If the socket is missing, start Docker Engine and rerun the script.
+
+## Pipeline Tools
+
+The Jenkins image includes Mike Farah `yq` v4, which RestoreStack uses to read `apps.yaml` and application configuration YAMLs. Rebuild and restart Jenkins with `./bootstrap.sh` after updating this repository so the image includes the tool. Pipelines assigned to a separate Jenkins agent still require Bash, Git, GNU tar, `mountpoint`, and Mike Farah `yq` v4 on that agent.
 
 ## Persistence and recovery notes
 

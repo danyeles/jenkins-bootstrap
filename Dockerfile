@@ -11,6 +11,10 @@ RUN apt-get update && \
       wget \
       curl \
       util-linux && \
+    curl -fsSL https://github.com/mikefarah/yq/releases/download/v4.49.2/yq_linux_amd64 \
+      -o /usr/local/bin/yq && \
+    chmod +x /usr/local/bin/yq && \
+    /usr/local/bin/yq --version && \
     mkdir -p /tmp/dockercli && \
     curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz \
       -o /tmp/dockercli/docker.tgz && \
