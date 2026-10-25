@@ -19,3 +19,6 @@ services:
       - ./casc:/var/jenkins_home/casc:ro
       - ./seed-jobs:/var/jenkins_home/seed-jobs:ro
       - /var/run/docker.sock:/var/run/docker.sock
+    
+      - /mnt/Backups:/mnt/Backups
+      - /mnt/Media:/mnt/Media
