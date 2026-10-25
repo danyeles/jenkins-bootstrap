@@ -22,3 +22,5 @@ services:
     
       - /mnt/Backups:/mnt/Backups
       - /mnt/Media:/mnt/Media
+      - /mnt:/mnt
+      - /home/docker:/home/docker
