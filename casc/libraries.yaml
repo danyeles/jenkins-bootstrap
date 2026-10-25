@@ -3,7 +3,7 @@ unclassified:
   globalLibraries:
     libraries:
       - name: jenkins-shared-lib
-        defaultVersion: main
+        defaultVersion: master
         implicit: true
         allowVersionOverride: false
         includeInChangesets: true
@@ -14,7 +14,7 @@ unclassified:
                 remote: https://github.com/danyeles/jenkins-shared-lib.git
       # Existing jenkins-infra/seed.groovy currently uses this older library identifier.
       - name: my-shared-lib
-        defaultVersion: main
+        defaultVersion: master
         implicit: false
         allowVersionOverride: false
         includeInChangesets: true
