@@ -16,9 +16,46 @@ if ! docker compose version >/dev/null 2>&1; then
 fi
 
 if [[ ! -S /var/run/docker.sock ]]; then
-  printf 'Docker socket /var/run/docker.sock is missing. Ensure the Docker daemon is running.\n' >&2
+  printf 'Docker socket /var/run/docker.sock is missing. Start Docker Engine and verify the socket exists before running bootstrap.\n' >&2
   exit 1
 fi
+
+DOCKER_GID="$(stat -c '%g' /var/run/docker.sock)" || {
+  printf 'Unable to detect the group ID of /var/run/docker.sock.\n' >&2
+  exit 1
+}
+if [[ ! "${DOCKER_GID}" =~ ^[0-9]+$ ]]; then
+  printf 'Invalid group ID detected for /var/run/docker.sock: %s\n' "${DOCKER_GID}" >&2
+  exit 1
+fi
+
+ENV_FILE="${SCRIPT_DIR}/.env"
+TEMP_ENV_FILE="$(mktemp "${SCRIPT_DIR}/.env.XXXXXX")" || {
+  printf 'Unable to create a temporary .env file in %s.\n' "${SCRIPT_DIR}" >&2
+  exit 1
+}
+cleanup() {
+  if [[ -n "${TEMP_ENV_FILE:-}" && -f "${TEMP_ENV_FILE}" ]]; then
+    rm -f -- "${TEMP_ENV_FILE}"
+  fi
+}
+trap cleanup EXIT
+
+if [[ -f "${ENV_FILE}" ]]; then
+  awk '!/^[[:space:]]*DOCKER_GID[[:space:]]*=/' "${ENV_FILE}" > "${TEMP_ENV_FILE}" || {
+    printf 'Unable to update %s.\n' "${ENV_FILE}" >&2
+    exit 1
+  }
+fi
+printf 'DOCKER_GID=%s\n' "${DOCKER_GID}" >> "${TEMP_ENV_FILE}" || {
+  printf 'Unable to write Docker group ID to %s.\n' "${TEMP_ENV_FILE}" >&2
+  exit 1
+}
+mv -- "${TEMP_ENV_FILE}" "${ENV_FILE}" || {
+  printf 'Unable to update %s.\n' "${ENV_FILE}" >&2
+  exit 1
+}
+TEMP_ENV_FILE=""
 
 mkdir -p "${JENKINS_HOME_DIR}" "${SCRIPT_DIR}/casc" "${SCRIPT_DIR}/seed-jobs"
 
@@ -33,7 +70,7 @@ if [[ "$(stat -c '%u' "${JENKINS_HOME_DIR}")" != "1000" ]]; then
   fi
 fi
 
-export DOCKER_GID="$(stat -c '%g' /var/run/docker.sock)"
+printf 'Detected Docker socket group ID: %s\n' "${DOCKER_GID}"
 cd "${SCRIPT_DIR}"
 docker compose build --pull
 docker compose up -d

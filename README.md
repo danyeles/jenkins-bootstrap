@@ -33,6 +33,12 @@ Rebuild a single-node Jenkins controller for the home media infrastructure using
 - `seed-jobs/seed-job.groovy` defines the `ArrSeed` Pipeline job and points it at `seed.groovy` in `jenkins-infra`.
 - `bootstrap.sh` creates directories, checks the Docker prerequisites, builds and starts the service, and prints access and unlock information.
 
+## Docker Socket Permissions
+
+Jenkins deployment jobs use the host Docker daemon through `/var/run/docker.sock`. The socket is owned by a host group, and Jenkins must run with that group ID to access it. A fixed GID is not portable because Debian and Ubuntu hosts can assign different IDs to the Docker group.
+
+During bootstrap, `bootstrap.sh` verifies that `/var/run/docker.sock` exists, detects its group ID with `stat -c '%g' /var/run/docker.sock`, and writes the detected value as `DOCKER_GID=<gid>` to the repository's `.env` file. Docker Compose uses that value as Jenkins' supplementary group. Bootstrap prints the detected GID before starting the service. If the socket is missing, start Docker Engine and rerun the script.
+
 ## Persistence and recovery notes
 
 `jenkins_home` contains Jenkins runtime data, including users, job state, build history, and the initial setup state. Back it up separately if you need to preserve that data; the repository recreates controller configuration and jobs, but cannot restore build history or user data that was never backed up. To recover from a failed SSD, a fresh clone plus `./bootstrap.sh` recreates the configured controller, after which run `ArrSeed` to regenerate deployment jobs.

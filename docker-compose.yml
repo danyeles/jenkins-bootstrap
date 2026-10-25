@@ -12,8 +12,8 @@ services:
     environment:
       CASC_JENKINS_CONFIG: /var/jenkins_home/casc
     group_add:
-      # bootstrap.sh supplies the Docker socket's host group ID for portable access.
-      - "${DOCKER_GID:-999}"
+      # Jenkins needs the socket's host group to manage containers in deployment jobs.
+      - "${DOCKER_GID}"
     volumes:
       - ./jenkins_home:/var/jenkins_home
       - ./casc:/var/jenkins_home/casc:ro
