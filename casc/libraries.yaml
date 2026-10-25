@@ -2,16 +2,6 @@
 unclassified:
   globalLibraries:
     libraries:
-      - name: jenkins-shared-lib
-        defaultVersion: master
-        implicit: true
-        allowVersionOverride: false
-        includeInChangesets: true
-        retriever:
-          modernSCM:
-            scm:
-              git:
-                remote: https://github.com/danyeles/jenkins-shared-lib.git
       # Existing jenkins-infra/seed.groovy currently uses this older library identifier.
       - name: my-shared-lib
         defaultVersion: master
