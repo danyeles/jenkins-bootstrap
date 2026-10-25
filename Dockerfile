@@ -8,9 +8,10 @@ RUN apt-get update \
     && apt-get install --no-install-recommends -y \
        docker.io \
        curl \
-       git \
        jq \
+       git \
        wget \
+       util-linux \
     && wget -qO /usr/local/bin/yq \
        https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
     && chmod +x /usr/local/bin/yq \
