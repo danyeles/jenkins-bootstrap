@@ -3,9 +3,19 @@ FROM jenkins/jenkins:lts
 
 # Provide the Docker client used by deployment pipelines; the daemon remains on the Ubuntu host.
 USER root
+
 RUN apt-get update \
-	&& apt-get install --no-install-recommends -y docker.io \
-	&& rm -rf /var/lib/apt/lists/*
+    && apt-get install --no-install-recommends -y \
+       docker.io \
+       curl \
+       git \
+       jq \
+       wget \
+    && wget -qO /usr/local/bin/yq \
+       https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
+    && chmod +x /usr/local/bin/yq \
+    && rm -rf /var/lib/apt/lists/*
+
 USER jenkins
 
 # Let Jenkins' plugin manager resolve compatible transitive dependencies at image build time.
